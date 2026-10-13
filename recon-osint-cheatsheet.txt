@@ -1,0 +1,134 @@
+# Recon / OSINT / Vuln Scanning — Command Reference
+
+All commands below checked for syntax. Corrections and notes are called out inline with ⚠️.
+
+## theHarvester / Sublist3r / Netdiscover / Whois
+
+```
+theHarvester -d microsoft.com -b duckduckgo
+ip -br addr
+sudo netdiscover -i eth0 -r 10.0.2.0/24
+whois google.com
+sublist3r -d microsoft.com
+```
+All correct as written.
+
+## FOCA
+
+1. Open FOCA
+2. Domain name: `mha.gov.in`
+3. Module select: FOCA
+4. Select all
+5. Run
+6. Download all
+7. Extract all metadata
+
+## Google Dorking
+
+```
+site:owasp.org
+filetype:pdf site:owasp.org
+intitle:"cheat sheet" site:owasp.org
+inurl:testing-guide site:owasp.org
+intext:"vulnerability" site:owasp.org
+site:owasp.org -inurl:events
+"threat modeling" site:owasp.org
+site:owasp.org filetype:pdf OR filetype:pptx
+cache:owasp.org
+```
+⚠️ `cache:owasp.org` — syntax is fine but Google deprecated the `cache:` operator; it no longer returns results. Left in for reference, but don't expect output.
+
+## Maltego
+
+- Username: `dharikashree2470024@ssn.edu.in`
+- Password: `u9UhpH82&3*s#HS`
+  - ⚠️ Not a syntax issue, but avoid hardcoding plaintext credentials into a doc you'll share — swap to a placeholder before distributing.
+- Drag a Domain entity: `ssn.edu.in`
+- Right-click Domain → Run Transform → "To DNS Name – [DNS]"
+- Right-click Domain → Run Transform → "To Email Address [SEC/PGP]"
+- Right-click a discovered DNS Name entity → Run Transform → "Persons from Domain"
+
+## Shodan
+
+1. Go to shodan.io
+2. Search: `8.8.8.8`
+3. Note down open ports and banners
+
+## Nmap
+
+```
+sudo nmap -sS -sV -O 127.0.0.1
+nmap -sn 10.0.2.0/24
+nmap 8.8.8.8
+nmap -p 22,80,443,587 <target>
+sudo nmap -sS 192.168.56.10
+sudo nmap -O 10.49.154.234
+sudo nmap -A 10.49.154.234
+```
+⚠️ Original had `nmap -p- 22,80,443,587` — invalid. `-p-` already means "all 65535 ports," so it can't be followed by a port list, and no target was specified. Fixed to `nmap -p 22,80,443,587 <target>` (use `-p-` alone if you actually want every port scanned).
+
+## Nessus
+
+1. Click "My Scans"
+2. Create new scan
+3. Click advanced settings
+4. Enter name and target IP
+   - Name: `Metasploitable 3`
+   - Description: `Metasploitable 3 Vuln scan`
+   - Folder: `My Scans`
+   - Targets: `192.168.1.9`
+
+## Nslookup
+
+```
+nslookup google.com 8.8.8.8
+nslookup -type=mx google.com
+nslookup -type=mx google.com 8.8.8.8
+```
+All correct.
+
+## Nikto
+
+```
+nikto -h http://127.0.0.1:8000
+nikto -h https://kosinkoblogs.wordpress.com/
+```
+Syntax is correct for both. ⚠️ The second target is a live third-party site — only run this against systems you own or have explicit written authorization to test; scanning it otherwise is a legal issue, independent of whether the command works.
+
+## Robtex
+
+- https://www.robtex.com
+- Domain name: `ssn.edu.in`
+
+## Armitage
+
+```
+sudo armitage
+```
+Correct.
+
+## Sysmon
+
+Path: EventViewer → Applications → Microsoft → Windows → Sysmon → Operational
+
+Config file (`sysmon-config.xml`):
+```xml
+<Sysmon schemaversion="4.90">
+  <EventFiltering>
+    <NetworkConnect onmatch="exclude" />
+    <FileCreate onmatch="exclude" />
+    <RegistryEvent onmatch="exclude" />
+    <DnsQuery onmatch="exclude" />
+    <FileDelete onmatch="exclude" />
+    <FileDeleteDetected onmatch="exclude" />
+  </EventFiltering>
+</Sysmon>
+```
+
+Commands:
+```
+cd C:\Sysmon
+sysmon64.exe -c sysmon-config.xml
+sysmon64.exe -c
+```
+All correct — the last command alone (`-c` with no file) just prints the current config instead of changing it.
